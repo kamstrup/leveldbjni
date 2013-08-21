@@ -89,6 +89,12 @@ public class NativeOptions {
 
     @JniField(cast="leveldb::CompressionType")
     private int compression = NativeCompressionType.kSnappyCompression.value;
+    
+    @JniField(cast="const leveldb::FilterPolicy*")
+    private long filter_policy = 0;
+    
+    @JniMethod(cast = "const leveldb::FilterPolicy*", accessor = "leveldb::NewBloomFilterPolicy")
+    private static final native long NewBloomFilterPolicy(int bits_per_key);
 
     public NativeOptions createIfMissing(boolean value) {
         this.create_if_missing = value;
@@ -188,6 +194,11 @@ public class NativeOptions {
 
     public NativeOptions compression(NativeCompressionType compression) {
         this.compression = compression.value;
+        return this;
+    }
+    
+    public NativeOptions bloomFilterBits(int bits_per_key) {
+        this.filter_policy = NewBloomFilterPolicy(bits_per_key);
         return this;
     }
 
